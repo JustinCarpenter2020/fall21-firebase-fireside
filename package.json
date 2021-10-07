@@ -1,0 +1,16 @@
+
+  {
+    "name": "firebase",
+    "version": "1.0.0",
+    "scripts": {
+      "build": "npm run setup:server",
+      "setup:app": "npm run setup:server && npm run setup:client",
+      "setup:client": "cd firebase.client && npm i",
+      "setup:server": "cd firebase && npm i",
+      "start": "node firebase/index.js"
+    },
+    "engines": {
+      "node": "^14.17.0"
+    }
+  }
+  
