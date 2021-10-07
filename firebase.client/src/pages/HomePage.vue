@@ -1,47 +1,11 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid background-image">
     <div class="row">
-      <form @submit.prevent="createPost">
-        <div class="col">
-          <div class="form-group">
-            <input type="text"
-                   class="form-control"
-                   name=""
-                   id="title"
-                   aria-describedby="helpId"
-                   placeholder="new post..."
-                   v-model="editable.body"
-            >
-            <button v-if="uploadReady" type="submit" class="btn btn-success">
-              Create post
-            </button>
-            <button v-if="selected" class="btn btn-danger" type="button" @click="upload('img')">
-              Upload
-            </button>
-          </div>
-        </div>
-        <div class="col">
-          <div class="form-group">
-            <input type="file" ref="fileInput" accept="image/*" @change="filePicked">
-          </div>
-        </div>
-        <div class="col">
-          <div v-if="image">
-            <img :src="imageUrl" alt="">
-          </div>
-          <div v-else>
-            <img id="img" class="selected" alt="">
-          </div>
-        </div>
-        <div class="col mt-4">
-          <div class="form-group">
-            <input type="file" ref="fileInput" accept="video/*" @change="filePicked">
-            <button v-if="selected" class="btn btn-danger" type="button" @click="upload('video')">
-              Upload video
-            </button>
-          </div>
-        </div>
-      </form>
+      <div class="col-12 text-center">
+        <button class="btn btn-primary mt-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#uploadContent" aria-controls="offcanvasWithBothOptions">
+          Take Photo
+        </button>
+      </div>
     </div>
     <div class="row text-center mt-5">
       <div class=" col animate__animated animate__bounce">
@@ -66,20 +30,13 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { postsService } from '../services/PostsService'
 import { logger } from '../utils/Logger'
 import { AppState } from '../AppState'
-import { fireBaseLogic } from '../services/FireBaseLogic'
 export default {
   name: 'Home',
   setup() {
-    const editable = ref({})
-    const selected = ref(false)
-    const uploadReady = ref(false)
-    const printing = ref(false)
-    const files = ref([])
-    const printImg = ref('')
     onMounted(async() => {
       try {
         await postsService.getAll()
@@ -88,59 +45,7 @@ export default {
       }
     })
     return {
-      files,
-      printImg,
-      editable,
-      uploadReady,
-      printing,
-      selected,
-      posts: computed(() => AppState.posts),
-      async createPost() {
-        try {
-          await postsService.create(editable.value)
-          printImg.value = editable.value.imgUrl
-          this.print()
-          editable.value = {}
-          document.getElementById('img').src = ''
-          uploadReady.value = false
-        } catch (error) {
-          logger.error(error)
-        }
-      },
-
-      // <----------------------File Selection proccess------------------------------->
-      filePicked(e) {
-        files.value = e.target.files
-        logger.log(files)
-        // NOTE establish a reader to read the file that we pulled, it waits for the reader to load and then grabs the id and replaces it with our img
-        const reader = new FileReader()
-
-        reader.readAsDataURL(files.value[0])
-
-        reader.onload = function() {
-          document.getElementById('img').src = reader.result
-        }
-        // NOTE this method is very particular it must be readAsDataURL, it's also a built in js method with readers, it allows us to return the contents of a file as a base64 encoded string
-        selected.value = true
-      },
-
-      // <----------------------upload proccess----------------------------------------------------->
-      async upload(type) {
-        const typeName = editable.value.body
-        const url = await fireBaseLogic.upload(typeName, files.value[0], type)
-        type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
-
-        selected.value = false
-        uploadReady.value = true
-      },
-
-      // <----------------------extra css----------------------------------------------------->
-      print() {
-        printing.value = true
-        setTimeout(function() {
-          printing.value = false
-        }, 2000)
-      }
+      posts: computed(() => AppState.posts)
     }
   }
 }
@@ -155,6 +60,13 @@ export default {
 }
 .camera{
   height: 30vh;
+}
+
+.background-image{
+  background-image: url('https://wallpaperaccess.com/full/2847483.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .selected{
