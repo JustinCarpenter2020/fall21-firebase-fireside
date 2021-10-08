@@ -47,15 +47,14 @@ import { ref } from '@vue/reactivity'
 import { logger } from '../utils/Logger'
 import { postsService } from '../services/PostsService'
 import { computed } from '@vue/runtime-core'
-import { fireBaseLogic } from '../services/FireBaseLogic'
 import { AppState } from '../AppState'
 export default {
   setup() {
     const editable = ref({})
+    const files = ref([])
     const selected = ref(false)
     const uploadReady = ref(false)
     const printing = ref(false)
-    const files = ref([])
     const printImg = ref('')
     return {
       files,
@@ -80,8 +79,8 @@ export default {
 
       // <----------------------File Selection proccess------------------------------->
       filePicked(e) {
-        files.value.push(e.target.files)
-        logger.log(files)
+        files.value = e.target.files
+        logger.log(AppState.files)
         // NOTE establish a reader to read the file that we pulled, it waits for the reader to load and then grabs the id and replaces it with our img
         const reader = new FileReader()
 
@@ -95,14 +94,14 @@ export default {
       },
 
       // <----------------------upload proccess----------------------------------------------------->
-      async upload(type) {
-        const typeName = editable.value.body
-        const url = await fireBaseLogic.upload(typeName, files.value[0], type)
-        type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
+      // async upload(type) {
+      //   const typeName = editable.value.body
+      //   const url = await fireBaseLogic.upload(typeName, files.value[0], type)
+      //   type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
 
-        selected.value = false
-        uploadReady.value = true
-      },
+      //   selected.value = false
+      //   uploadReady.value = true
+      // },
 
       // <----------------------extra css----------------------------------------------------->
       print() {
