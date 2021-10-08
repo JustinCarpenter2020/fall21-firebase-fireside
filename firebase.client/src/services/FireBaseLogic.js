@@ -1,4 +1,5 @@
-import { storage } from '../env'
+import { storage } from '../utils/FireBaseHandler'
+
 class FireBaseLogic {
   async upload(name, data, type) {
     // NOTE creates a collection in firebase storage with the pathing images => imagename.png
