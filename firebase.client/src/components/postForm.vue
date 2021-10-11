@@ -18,26 +18,17 @@
         </button>
       </div>
     </div>
-    <div class="col">
+    <div class="col mt-2">
       <div class="form-group">
-        <input type="file" ref="fileInput" accept="image/*" @change="filePicked" multiple="multiple">
+        <input type="file" ref="fileInput" accept="image/*,video/*" @change="filePicked" multiple="multiple">
       </div>
     </div>
     <div class="col">
-      <div v-if="image">
-        <img :src="imageUrl" alt="">
-      </div>
-      <div v-else>
-        <img id="img" class="selected" alt="">
-      </div>
-    </div>
-    <div class="col mt-4">
-      <div class="form-group">
-        <input type="file" ref="fileInput" accept="video/*" @change="filePicked">
-        <button v-if="selected" class="btn btn-danger" type="button" @click="upload('video')">
-          Upload video
-        </button>
-      </div>
+      <image class="h-50 w-50" id="image"></image>
+      <video width="320" id="video" height="240">
+        <!-- <source type="video/mp4"> -->
+        Your browser does not support the video tag.
+      </video>
     </div>
   </form>
 </template>
@@ -48,6 +39,7 @@ import { logger } from '../utils/Logger'
 import { postsService } from '../services/PostsService'
 import { computed } from '@vue/runtime-core'
 import { AppState } from '../AppState'
+import { fireBaseLogic } from '../services/FireBaseLogic'
 export default {
   setup() {
     const editable = ref({})
@@ -80,28 +72,40 @@ export default {
       // <----------------------File Selection proccess------------------------------->
       filePicked(e) {
         files.value = e.target.files
-        logger.log(AppState.files)
-        // NOTE establish a reader to read the file that we pulled, it waits for the reader to load and then grabs the id and replaces it with our img
-        const reader = new FileReader()
-
-        reader.readAsDataURL(files.value[0])
-
-        reader.onload = function() {
-          document.getElementById('img').src = reader.result
+        document.getElementById('image').src = ''
+        document.getElementById('video').src = ''
+        document.getElementById('video').attributes.remove = 'controls'
+        logger.log('files ref value', files.value)
+        // Now we are establishing a 'reader' so that we can read the file
+        // NOTE FileReader() comes from default JS - this lets JS read the contents of a file
+        if (files.value[0]?.type.includes('image')) {
+          logger.log('yup')
+          const reader = new FileReader()
+          reader.readAsDataURL(files.value[0])
+          reader.onload = () => {
+            document.getElementById('image').src = reader.result
+            editable.type = 'image'
+          }
+        } else {
+          const reader = new FileReader()
+          reader.readAsDataURL(files.value[0])
+          reader.onload = () => {
+            document.getElementById('video').src = reader.result
+          }
+          document.getElementById('video').attributes.add = 'controls'
+          editable.type = 'video'
         }
-        // NOTE this method is very particular it must be readAsDataURL, it's also a built in js method with readers, it allows us to return the contents of a file as a base64 encoded string
-        selected.value = true
       },
 
       // <----------------------upload proccess----------------------------------------------------->
-      // async upload(type) {
-      //   const typeName = editable.value.body
-      //   const url = await fireBaseLogic.upload(typeName, files.value[0], type)
-      //   type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
+      async upload() {
+        const typeName = editable.value.body
+        const url = await fireBaseLogic.upload(typeName, files.value[0], editable.type)
+        editable.type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
 
-      //   selected.value = false
-      //   uploadReady.value = true
-      // },
+        selected.value = false
+        uploadReady.value = true
+      },
 
       // <----------------------extra css----------------------------------------------------->
       print() {
