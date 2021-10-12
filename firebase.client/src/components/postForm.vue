@@ -33,7 +33,7 @@ import { logger } from '../utils/Logger'
 import { postsService } from '../services/PostsService'
 import { computed } from '@vue/runtime-core'
 import { AppState } from '../AppState'
-import { fireBaseLogic } from '../services/FireBaseLogic'
+import { firebaseService } from '../services/FirebaseService'
 export default {
   setup() {
     const editable = ref({})
@@ -72,7 +72,7 @@ export default {
       // <----------------------upload proccess----------------------------------------------------->
       async upload() {
         const typeName = editable.value.body
-        const url = await fireBaseLogic.upload(typeName, files.value[0], editable.value.type)
+        const url = await firebaseService.upload(typeName, files.value[0], editable.value.type)
         editable.value.mediaUrl = url
         await this.createPost()
       },
