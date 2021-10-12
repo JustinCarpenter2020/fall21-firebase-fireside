@@ -8,10 +8,6 @@
     </div>
     <div class="offcanvas-body">
       <postForm />
-      <!-- <p>Images:</p>
-      <selectedImg v-for="(i, index) in videos" :key="index" :image-prop="i" />
-      <p>Videos:</p>
-      <selectedVideo v-for="(v, index) in videos" :key="index" :video-prop="v" /> -->
     </div>
   </div>
 </template>

@@ -17,12 +17,19 @@
     </div>
     <div class="col mt-2">
       <div class="form-group">
-        <input type="file" ref="fileInput" accept="image/*,video/*, audio/*" @change="filePicked" multiple="multiple">
+        <input type="file" ref="fileInput" accept="image/*,video/*,audio/*" @change="filePicked" multiple="multiple">
       </div>
     </div>
     <div class="col">
       <img src="" alt="" class="img-fluid" id="image">
       <video class="img-fluid" src="" id="video"></video>
+      <audio id="audio"
+             controls
+             src=""
+      >
+        Your browser does not support the
+        <code>audio</code> element.
+      </audio>
     </div>
   </form>
 </template>
@@ -51,6 +58,8 @@ export default {
           files.value = []
           document.getElementById('image').src = ''
           document.getElementById('video').src = ''
+          document.getElementById('audio').src = ''
+
           const offCanvas = Offcanvas.getInstance(document.getElementById('uploadContent'))
           offCanvas.hide()
         } catch (error) {
@@ -70,15 +79,17 @@ export default {
         reader.onload = () => {
           document.getElementById('image').src = reader.result
           document.getElementById('video').src = reader.result
+          document.getElementById('audio').src = reader.result
         }
-        files.value[0]?.type.includes('image') ? editable.value.type = 'Images' : editable.value.type = 'Videos'
+        // FIXME write a switch to Determine type
+        files.value[0]?.type.includes('image') ? editable.value.type = 'Images' : files.value[0]?.type.includes('video') ? editable.value.type = 'Videos' : editable.value.type = 'Audio'
       },
 
       // <----------------------upload proccess----------------------------------------------------->
       async upload() {
-        const typeName = editable.value.body
-        const url = await firebaseService.upload(typeName, files.value[0], editable.value.type)
+        const url = await firebaseService.upload(files.value[0], editable.value.type)
         editable.value.mediaUrl = url
+        logger.log(url)
         await this.createPost()
       },
 
