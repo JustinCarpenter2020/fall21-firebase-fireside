@@ -10,14 +10,14 @@
                placeholder="new post..."
                v-model="editable.body"
         >
-        <button v-if="files[0]" class="btn btn-danger" type="button" @click="upload">
+        <button v-if="files[0] && editable.body" class="btn btn-danger" type="button" @click="upload">
           Create post
         </button>
       </div>
     </div>
     <div class="col mt-2">
       <div class="form-group">
-        <input type="file" ref="fileInput" accept="image/*,video/*" @change="filePicked" multiple="multiple">
+        <input type="file" ref="fileInput" accept="image/*,video/*, audio/*" @change="filePicked" multiple="multiple">
       </div>
     </div>
     <div class="col">
@@ -49,6 +49,8 @@ export default {
           this.print()
           editable.value = {}
           files.value = []
+          document.getElementById('image').src = ''
+          document.getElementById('video').src = ''
           const offCanvas = Offcanvas.getInstance(document.getElementById('uploadContent'))
           offCanvas.hide()
         } catch (error) {
@@ -60,16 +62,16 @@ export default {
       filePicked(e) {
         files.value = e.target.files
         logger.log('files ref value', files.value)
-        // Now we are establishing a 'reader' so that we can read the file
         // NOTE FileReader() comes from default JS - this lets JS read the contents of a file
+        // Now we are establishing a 'reader' so that we can read the file
         const reader = new FileReader()
+        // NOTE this method is very particular it must be readAsDataURL, it's also a built in js method with readers, it allows us to return the contents of a file as a base64 encoded string
         reader.readAsDataURL(files.value[0])
         reader.onload = () => {
           document.getElementById('image').src = reader.result
           document.getElementById('video').src = reader.result
-          // document.getElementById('audio').src = reader.result
         }
-        files.value[0]?.type.includes('image') ? editable.value.type = 'image' : editable.value.type = 'video'
+        files.value[0]?.type.includes('image') ? editable.value.type = 'Images' : editable.value.type = 'Videos'
       },
 
       // <----------------------upload proccess----------------------------------------------------->

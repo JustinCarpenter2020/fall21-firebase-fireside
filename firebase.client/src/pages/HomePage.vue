@@ -2,7 +2,7 @@
   <div class="container-fluid background-image">
     <div class="row">
       <div class="col-12 text-center">
-        <button class="btn btn-primary mt-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#uploadContent" aria-controls="offcanvasWithBothOptions">
+        <button class=" mt-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#uploadContent" aria-controls="offcanvasWithBothOptions">
           Take Photo
         </button>
       </div>
