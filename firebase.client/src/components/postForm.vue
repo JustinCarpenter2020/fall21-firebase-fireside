@@ -34,6 +34,7 @@ import { postsService } from '../services/PostsService'
 import { computed } from '@vue/runtime-core'
 import { AppState } from '../AppState'
 import { firebaseService } from '../services/FirebaseService'
+import { Offcanvas } from 'bootstrap'
 export default {
   setup() {
     const editable = ref({})
@@ -48,6 +49,8 @@ export default {
           this.print()
           editable.value = {}
           files.value = []
+          const offCanvas = Offcanvas.getInstance(document.getElementById('uploadContent'))
+          offCanvas.hide()
         } catch (error) {
           logger.error(error)
         }
