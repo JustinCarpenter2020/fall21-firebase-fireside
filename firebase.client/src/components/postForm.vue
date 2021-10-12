@@ -38,18 +38,13 @@ export default {
   setup() {
     const editable = ref({})
     const files = ref([])
-    const printing = ref(false)
-    const printImg = ref('')
     return {
       files,
-      printImg,
       editable,
-      printing,
       posts: computed(() => AppState.posts),
       async createPost() {
         try {
           await postsService.create(editable.value)
-          printImg.value = editable.value.imgUrl
           this.print()
           editable.value = {}
           files.value = []
@@ -84,9 +79,9 @@ export default {
 
       // <----------------------extra css----------------------------------------------------->
       print() {
-        printing.value = true
+        AppState.printing = true
         setTimeout(function() {
-          printing.value = false
+          AppState.printing = false
         }, 2000)
       }
     }

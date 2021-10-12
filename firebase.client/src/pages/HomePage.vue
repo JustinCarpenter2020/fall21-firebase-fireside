@@ -16,8 +16,8 @@
       <div class="col-3 animate__animated animate__slideInDown">
         <div>
           <div class="card shadow ">
-            <div class="card-body">
-              <img id="printing" :src="printImg" class="print img-fluid" />
+            <div class="card-body bg-dark print">
+              <!-- <img id="printing" :src="printImg" class="print img-fluid" /> -->
             </div>
           </div>
         </div>
@@ -33,6 +33,7 @@
 import { computed, onMounted } from 'vue'
 import { postsService } from '../services/PostsService'
 import { logger } from '../utils/Logger'
+import 'animate.css'
 import { AppState } from '../AppState'
 export default {
   name: 'Home',
@@ -45,7 +46,8 @@ export default {
       }
     })
     return {
-      posts: computed(() => AppState.posts)
+      posts: computed(() => AppState.posts),
+      printing: computed(() => AppState.printing)
     }
   }
 }
