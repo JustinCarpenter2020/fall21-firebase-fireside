@@ -2,7 +2,7 @@ import { storage } from '../utils/FireBaseHandler'
 
 class FireBaseLogic {
   async upload(name, data, type) {
-    if (type === 'img') {
+    if (type === 'image') {
       // NOTE creates a collection in firebase storage with the pathing images => imagename.png
       const collection = storage.ref('Images/' + name + '.png')
 

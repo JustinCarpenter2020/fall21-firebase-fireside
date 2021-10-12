@@ -1,9 +1,9 @@
 <template>
   <div class="item">
     <div class="polaroid">
-      <img :src="postProp.imgUrl" v-if="postProp.imgUrl">
+      <img :src="postProp.mediaUrl" v-if="postProp.mediaUrl?.includes('Image')">
       <video class="img-fluid" controls v-else>
-        <source :src="postProp.videoUrl" type="video/mp4">
+        <source :src="postProp.mediaUrl" type="video/mp4">
         <source src="movie.ogg" type="video/ogg">
         Your browser does not support the video tag.
       </video>

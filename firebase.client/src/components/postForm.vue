@@ -10,11 +10,8 @@
                placeholder="new post..."
                v-model="editable.body"
         >
-        <button v-if="uploadReady" type="submit" class="btn btn-success">
+        <button v-if="files[0]" class="btn btn-danger" type="button" @click="upload">
           Create post
-        </button>
-        <button v-if="selected" class="btn btn-danger" type="button" @click="upload('img')">
-          Upload
         </button>
       </div>
     </div>
@@ -24,11 +21,8 @@
       </div>
     </div>
     <div class="col">
-      <image class="h-50 w-50" id="image"></image>
-      <video width="320" id="video" height="240">
-        <!-- <source type="video/mp4"> -->
-        Your browser does not support the video tag.
-      </video>
+      <img src="" alt="" class="img-fluid" id="image">
+      <video class="img-fluid" src="" id="video"></video>
     </div>
   </form>
 </template>
@@ -44,17 +38,13 @@ export default {
   setup() {
     const editable = ref({})
     const files = ref([])
-    const selected = ref(false)
-    const uploadReady = ref(false)
     const printing = ref(false)
     const printImg = ref('')
     return {
       files,
       printImg,
       editable,
-      uploadReady,
       printing,
-      selected,
       posts: computed(() => AppState.posts),
       async createPost() {
         try {
@@ -62,8 +52,7 @@ export default {
           printImg.value = editable.value.imgUrl
           this.print()
           editable.value = {}
-          document.getElementById('img').src = ''
-          uploadReady.value = false
+          files.value = []
         } catch (error) {
           logger.error(error)
         }
@@ -72,39 +61,25 @@ export default {
       // <----------------------File Selection proccess------------------------------->
       filePicked(e) {
         files.value = e.target.files
-        document.getElementById('image').src = ''
-        document.getElementById('video').src = ''
-        document.getElementById('video').attributes.remove = 'controls'
         logger.log('files ref value', files.value)
         // Now we are establishing a 'reader' so that we can read the file
         // NOTE FileReader() comes from default JS - this lets JS read the contents of a file
-        if (files.value[0]?.type.includes('image')) {
-          logger.log('yup')
-          const reader = new FileReader()
-          reader.readAsDataURL(files.value[0])
-          reader.onload = () => {
-            document.getElementById('image').src = reader.result
-            editable.type = 'image'
-          }
-        } else {
-          const reader = new FileReader()
-          reader.readAsDataURL(files.value[0])
-          reader.onload = () => {
-            document.getElementById('video').src = reader.result
-          }
-          document.getElementById('video').attributes.add = 'controls'
-          editable.type = 'video'
+        const reader = new FileReader()
+        reader.readAsDataURL(files.value[0])
+        reader.onload = () => {
+          document.getElementById('image').src = reader.result
+          document.getElementById('video').src = reader.result
+          // document.getElementById('audio').src = reader.result
         }
+        files.value[0]?.type.includes('image') ? editable.value.type = 'image' : editable.value.type = 'video'
       },
 
       // <----------------------upload proccess----------------------------------------------------->
       async upload() {
         const typeName = editable.value.body
-        const url = await fireBaseLogic.upload(typeName, files.value[0], editable.type)
-        editable.type === 'img' ? editable.value.imgUrl = url : editable.value.videoUrl = url
-
-        selected.value = false
-        uploadReady.value = true
+        const url = await fireBaseLogic.upload(typeName, files.value[0], editable.value.type)
+        editable.value.mediaUrl = url
+        await this.createPost()
       },
 
       // <----------------------extra css----------------------------------------------------->
