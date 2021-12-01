@@ -12,3 +12,20 @@ service firebase.storage {
 }
 ```
 
+
+Delete an entire folder in firebase
+```js
+const bucket = admin.storage().bucket();
+await bucket.deleteFiles({
+   prefix: `${folderName}/`
+});
+
+```
+
+
+Delete one file by its filename
+```js
+  const fileName = firebaseUrl.slice(firebaseUrl.indexOf('%2F') + 3, firebaseUrl.indexOf('?alt'))
+
+```
+
